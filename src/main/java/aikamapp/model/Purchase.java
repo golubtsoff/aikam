@@ -3,20 +3,20 @@ package aikamapp.model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class Buy {
+public class Purchase {
     private Long id;
     private Buyer buyer;
     private Good good;
     private LocalDate date;
 
-    public Buy(Long id, Buyer buyer, Good good, LocalDate date) {
+    public Purchase(Long id, Buyer buyer, Good good, LocalDate date) {
         this.id = id;
         this.buyer = buyer;
         this.good = good;
         this.date = date;
     }
 
-    public Buy(Buyer buyer, Good good, LocalDate date) {
+    public Purchase(Buyer buyer, Good good, LocalDate date) {
         this(null, buyer, good, date);
     }
 
@@ -54,7 +54,7 @@ public class Buy {
 
     @Override
     public String toString() {
-        return "Buy{" +
+        return "Purchase{" +
                 "id=" + id +
                 ", buyer=" + buyer +
                 ", good=" + good +
@@ -66,7 +66,7 @@ public class Buy {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Buy buy = (Buy) o;
+        Purchase buy = (Purchase) o;
         return Objects.equals(id, buy.id);
     }
 
