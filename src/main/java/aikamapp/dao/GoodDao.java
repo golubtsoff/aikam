@@ -1,8 +1,6 @@
 package aikamapp.dao;
 
-import aikamapp.mapper.BuyerMapper;
 import aikamapp.mapper.GoodMapper;
-import aikamapp.model.Buyer;
 import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;

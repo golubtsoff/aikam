@@ -1,8 +1,6 @@
 package aikamapp.dao;
 
-import aikamapp.mapper.GoodMapper;
 import aikamapp.mapper.PurchaseMapper;
-import aikamapp.model.Good;
 import aikamapp.model.Purchase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -10,6 +8,8 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository("purchaseDao")
@@ -50,5 +50,20 @@ public class PurchaseDao extends JdbcDaoSupport {
         PurchaseMapper mapper = new PurchaseMapper();
         assert this.getJdbcTemplate() != null;
         return this.getJdbcTemplate().query(sql, mapper);
+    }
+
+    public int create(long buyerId, long goodId, LocalDate date){
+        String sql = "insert into purchases (buyer_id, good_id, date) " +
+                "values (?, ?, ?)";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        Object[] params = new Object[] { buyerId, goodId, date};
+
+        assert this.getJdbcTemplate() != null;
+        return this.getJdbcTemplate().update(sql, params);
+    }
+
+    public int create(long buyerId, long goodId){
+        return create(buyerId, goodId, LocalDate.now());
     }
 }
