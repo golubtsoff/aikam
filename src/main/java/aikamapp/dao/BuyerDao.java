@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository("buyerDao")
@@ -52,7 +53,7 @@ public class BuyerDao  extends JdbcDaoSupport {
         return this.getJdbcTemplate().query(sql, params, mapper);
     }
 
-    public List<Buyer> getByGoodAndCountOfPurchases(Good good, int count){
+    public List<Buyer> getByGoodAndCountOfPurchases(String goodsTitle, int count){
         String sql =
                 "select q.id, q.firstname, q.lastname\n" +
                 "from (select b.*,\n" +
@@ -64,13 +65,13 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "      group by b.id) q\n" +
                 "where q.number_of_purchases >= ?";
 
-        Object[] params = new Object[] { good.getTitle(), count };
+        Object[] params = new Object[] { goodsTitle, count };
         BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
         return this.getJdbcTemplate().query(sql, params, mapper);
     }
 
-    public List<Buyer> getByCostOfPurchases(int minCost, int maxCost){
+    public List<Buyer> getByCostOfPurchases(BigDecimal minCost, BigDecimal maxCost){
         String sql =
                 "select q.id, q.firstname, q.lastname\n" +
                 "from (select b.*,\n" +

@@ -2,11 +2,11 @@ package aikamapp.service;
 
 import aikamapp.dao.BuyerDao;
 import aikamapp.model.Buyer;
-import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service("buyerService")
@@ -27,11 +27,11 @@ public class BuyerService {
         return buyerDao.getByLastname(lastname);
     }
 
-    public List<Buyer> getByGoodAndCountOfPurchases(Good good, int count){
-        return buyerDao.getByGoodAndCountOfPurchases(good, count);
+    public List<Buyer> getByGoodAndCountOfPurchases(String goodsTitle, int count){
+        return buyerDao.getByGoodAndCountOfPurchases(goodsTitle, count);
     }
 
-    public List<Buyer> getByCostOfPurchases(int minCost, int maxCost){
+    public List<Buyer> getByCostOfPurchases(BigDecimal minCost, BigDecimal maxCost){
         return buyerDao.getByCostOfPurchases(minCost, maxCost);
     }
     public List<Buyer> getPassiveBuyers(int limit){
