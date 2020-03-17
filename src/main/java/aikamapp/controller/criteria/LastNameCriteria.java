@@ -2,8 +2,6 @@ package aikamapp.controller.criteria;
 
 import aikamapp.model.Buyer;
 import aikamapp.service.BuyerService;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

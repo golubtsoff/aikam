@@ -1,6 +1,8 @@
 package aikamapp.dao;
 
+import aikamapp.controller.stat.BuyerPurchaseStat;
 import aikamapp.mapper.BuyerMapper;
+import aikamapp.mapper.BuyerPurchaseStatMapper;
 import aikamapp.model.Buyer;
 import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository("buyerDao")
@@ -101,6 +104,23 @@ public class BuyerDao  extends JdbcDaoSupport {
 
         Object[] params = new Object[] { limit };
         BuyerMapper mapper = new BuyerMapper();
+        assert this.getJdbcTemplate() != null;
+        return this.getJdbcTemplate().query(sql, params, mapper);
+    }
+
+    public List<BuyerPurchaseStat> getBuyerPurchaseStats(LocalDate startDate, LocalDate endDate){
+        String sql =
+                "select b.id bid, b.firstname, b.lastname, g.id gid, g.title, g.price,\n" +
+                "    sum(g.price) as cost\n" +
+                "from buyers b, goods g, purchases p\n" +
+                "where p.buyer_id = b.id\n" +
+                "    and p.good_id = g.id\n" +
+                "    and p.date between ? and ?\n" +
+                "group by b.id, g.id\n" +
+                "order by b.id, cost desc";
+
+        Object[] params = new Object[] { startDate, endDate };
+        BuyerPurchaseStatMapper mapper = new BuyerPurchaseStatMapper();
         assert this.getJdbcTemplate() != null;
         return this.getJdbcTemplate().query(sql, params, mapper);
     }

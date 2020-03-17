@@ -64,9 +64,9 @@ public class ControllerApp {
                 System.out.println(criteria.get(buyerService));
             }
         } else if (operation.toLowerCase().equals(STAT_OPERATION)){
+            Stat stat;
             try(FileReader fr = new FileReader("input.json")){
-                Stat stat = gson.fromJson(fr, Stat.class);
-                System.out.println(stat);
+                stat = gson.fromJson(fr, Stat.class);
             }
         } else {
             System.out.println("Операция " + operation + " не поддерживается.");
