@@ -6,19 +6,19 @@ import aikamapp.service.BuyerService;
 import java.util.List;
 
 public class LastNameCriteria implements Criteria {
-    private final String lastname;
+    private final String lastName;
 
-    public LastNameCriteria(String lastname) {
+    public LastNameCriteria(String lastName) {
         super();
-        this.lastname = lastname;
+        this.lastName = lastName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
     @Override
     public List<Buyer> get(BuyerService buyerService) {
-        return buyerService.getByLastname(lastname);
+        return buyerService.getByLastname(lastName);
     }
 }

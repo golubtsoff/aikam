@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class Buyer {
     private Long id;
-    private String firstName;
     private String lastName;
+    private String firstName;
 
     public Buyer(Long id, String firstName, String lastName){
         this.id = id;

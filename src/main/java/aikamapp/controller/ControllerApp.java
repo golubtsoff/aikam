@@ -1,7 +1,9 @@
 package aikamapp.controller;
 
 import aikamapp.controller.criteria.*;
-import aikamapp.ignore.TestJson;
+import aikamapp.controller.dto.CriteriasDto;
+import aikamapp.controller.dto.FieldsExclusionStrategy;
+import aikamapp.controller.stat.TotalStat;
 import aikamapp.service.BuyerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
+import java.awt.event.WindowStateListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,11 +25,10 @@ import java.util.Set;
 
 @Component("controllerApp")
 public class ControllerApp {
-    @Autowired
-    private BuyerService buyerService;
+    private final BuyerService buyerService;
     private final String operation;
-    private final String inputFile;
-    private final String outputFile;
+    private final String inputFileName;
+    private final String outputFileName;
 
     private final String SEARCH_OPERATION = "search";
     private final String STAT_OPERATION = "stat";
@@ -45,32 +48,48 @@ public class ControllerApp {
         public LocalDate endDate;
     }
 
-    ControllerApp(ApplicationArguments applicationArguments) {
+    public ControllerApp(ApplicationArguments applicationArguments, BuyerService buyerService) {
         operation = applicationArguments.getSourceArgs()[0];
-        inputFile = applicationArguments.getSourceArgs()[1];
-        outputFile = applicationArguments.getSourceArgs()[2];
+        inputFileName = applicationArguments.getSourceArgs()[1];
+        outputFileName = applicationArguments.getSourceArgs()[2];
+        this.buyerService = buyerService;
     }
 
     public void run() throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
         if (operation.toLowerCase().equals(SEARCH_OPERATION)){
-            Search search;
-            try(FileReader fr = new FileReader("input.json")){
-                search = gson.fromJson(fr, Search.class);
-            }
+            Search search = getOperation(Search.class);
             List<Criteria> criterias = getCriterias(search);
-            for (Criteria criteria : criterias){
-                System.out.println(criteria.get(buyerService));
+
+            try(FileWriter fw = new FileWriter(outputFileName)){
+                CriteriasDto criteriasDto = new CriteriasDto(operation, criterias, buyerService);
+                Gson dOut = getGsonWithExclusionFields("id");
+                dOut.toJson(criteriasDto, fw);
             }
         } else if (operation.toLowerCase().equals(STAT_OPERATION)){
-            Stat stat;
-            try(FileReader fr = new FileReader("input.json")){
-                stat = gson.fromJson(fr, Stat.class);
+            Stat stat = getOperation(Stat.class);
+            TotalStat totalStat = buyerService.getTotalStat(stat.startDate, stat.endDate);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            try(FileWriter fw = new FileWriter(outputFileName)){
+                gson.toJson(totalStat, fw);
             }
         } else {
             System.out.println("Операция " + operation + " не поддерживается.");
         }
+    }
+
+    private <T> T getOperation(Class<T> cl) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try(FileReader fr = new FileReader(inputFileName)){
+            return gson.fromJson(fr, cl);
+        }
+    }
+
+    private Gson getGsonWithExclusionFields(String... exclusionFields){
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .setExclusionStrategies(new FieldsExclusionStrategy(
+                        exclusionFields))
+                .create();
     }
 
     private List<Criteria> getCriterias(Search search){
