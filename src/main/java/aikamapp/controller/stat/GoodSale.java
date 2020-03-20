@@ -5,11 +5,11 @@ import aikamapp.model.Good;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class GoodsSale {
+public class GoodSale {
     private final Good good;
     private final BigDecimal cost;
 
-    public GoodsSale(Good good, BigDecimal cost) {
+    public GoodSale(Good good, BigDecimal cost) {
         this.good = good;
         this.cost = cost;
     }
@@ -34,8 +34,8 @@ public class GoodsSale {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GoodsSale goodsSale = (GoodsSale) o;
-        return good.equals(goodsSale.good);
+        GoodSale goodSale = (GoodSale) o;
+        return good.equals(goodSale.good);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package aikamapp.mapper;
 
-import aikamapp.controller.stat.BuyerPurchaseStat;
-import aikamapp.controller.stat.GoodsSale;
+import aikamapp.controller.stat.PurchaseStat;
+import aikamapp.controller.stat.GoodSale;
 import aikamapp.model.Buyer;
 import aikamapp.model.Good;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BuyerPurchaseStatMapper implements RowMapper<BuyerPurchaseStat> {
+public class PurchaseStatMapper implements RowMapper<PurchaseStat> {
     @Override
-    public BuyerPurchaseStat mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public PurchaseStat mapRow(ResultSet rs, int rowNum) throws SQLException {
         Long bid = rs.getLong("bid");
         String firstname = rs.getString("firstname");
         String lastname = rs.getString("lastname");
@@ -24,8 +24,8 @@ public class BuyerPurchaseStatMapper implements RowMapper<BuyerPurchaseStat> {
         Good good = new Good(gid, title, price);
 
         BigDecimal cost = rs.getBigDecimal("cost");
-        GoodsSale goodsSale = new GoodsSale(good, cost);
+        GoodSale goodSale = new GoodSale(good, cost);
 
-        return new BuyerPurchaseStat(buyer, goodsSale);
+        return new PurchaseStat(buyer, goodSale);
     }
 }

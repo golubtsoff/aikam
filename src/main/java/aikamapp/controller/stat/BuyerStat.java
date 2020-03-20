@@ -3,31 +3,36 @@ package aikamapp.controller.stat;
 import aikamapp.model.Buyer;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class BuyerStat {
     private final Buyer buyer;
-    private final Set<GoodsSale> goodsSales;
-    private final BigDecimal totalCost;
+    private List<GoodSale> goodSales;
+    private BigDecimal totalCost;
 
-    public BuyerStat(Buyer buyer, Set<GoodsSale> goodsSales, BigDecimal totalCost) {
+    public BuyerStat(Buyer buyer) {
         this.buyer = buyer;
-        this.goodsSales = goodsSales;
-        this.totalCost = totalCost;
+        this.goodSales = new ArrayList<>();
+        this.totalCost = new BigDecimal(0);
     }
 
     public Buyer getBuyer() {
         return buyer;
     }
 
-    public Set<GoodsSale> getGoodsSales() {
-        return goodsSales;
+    public List<GoodSale> getGoodSales() {
+        return goodSales;
     }
 
     public BigDecimal getTotalCost() {
         return totalCost;
+    }
+
+    public void addSale(GoodSale sale) {
+        goodSales.add(sale);
+        totalCost = totalCost.add(sale.getCost());
     }
 
     @Override

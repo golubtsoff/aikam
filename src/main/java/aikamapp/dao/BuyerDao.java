@@ -1,10 +1,9 @@
 package aikamapp.dao;
 
-import aikamapp.controller.stat.BuyerPurchaseStat;
+import aikamapp.controller.stat.PurchaseStat;
 import aikamapp.mapper.BuyerMapper;
-import aikamapp.mapper.BuyerPurchaseStatMapper;
+import aikamapp.mapper.PurchaseStatMapper;
 import aikamapp.model.Buyer;
-import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
@@ -108,7 +107,7 @@ public class BuyerDao  extends JdbcDaoSupport {
         return this.getJdbcTemplate().query(sql, params, mapper);
     }
 
-    public List<BuyerPurchaseStat> getBuyerPurchaseStats(LocalDate startDate, LocalDate endDate){
+    public List<PurchaseStat> getPurchaseStats(LocalDate startDate, LocalDate endDate){
         String sql =
                 "select b.id bid, b.firstname, b.lastname, g.id gid, g.title, g.price,\n" +
                 "    sum(g.price) as cost\n" +
@@ -120,9 +119,22 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "order by b.id, cost desc";
 
         Object[] params = new Object[] { startDate, endDate };
-        BuyerPurchaseStatMapper mapper = new BuyerPurchaseStatMapper();
+        PurchaseStatMapper mapper = new PurchaseStatMapper();
         assert this.getJdbcTemplate() != null;
         return this.getJdbcTemplate().query(sql, params, mapper);
+    }
+
+    public Integer getNumberOfDays(LocalDate startDate, LocalDate endDate){
+        String sql =
+                "select coalesce(count(q.date_set), 0) from\n" +
+                "(select p.date date_set\n" +
+                "from purchases p\n" +
+                "where p.date between ? and ?\n" +
+                "group by date) q";
+
+        Object[] params = new Object[] { startDate, endDate };
+        assert this.getJdbcTemplate() != null;
+        return this.getJdbcTemplate().queryForObject(sql, params, Integer.class);
     }
 
 }

@@ -4,28 +4,28 @@ import aikamapp.model.Buyer;
 
 import java.util.Objects;
 
-public class BuyerPurchaseStat {
+public class PurchaseStat {
     private final Buyer buyer;
-    private final GoodsSale goodsSales;
+    private final GoodSale goodSales;
 
-    public BuyerPurchaseStat(Buyer buyer, GoodsSale goodsSales) {
+    public PurchaseStat(Buyer buyer, GoodSale goodSales) {
         this.buyer = buyer;
-        this.goodsSales = goodsSales;
+        this.goodSales = goodSales;
     }
 
     public Buyer getBuyer() {
         return buyer;
     }
 
-    public GoodsSale getGoodsSales() {
-        return goodsSales;
+    public GoodSale getGoodsSale() {
+        return goodSales;
     }
 
     @Override
     public String toString() {
-        return "BuyerPurchaseStat{" +
+        return "PurchaseStat{" +
                 "buyer=" + buyer +
-                ", goodsSales=" + goodsSales +
+                ", goodsSales=" + goodSales +
                 '}';
     }
 
@@ -33,13 +33,13 @@ public class BuyerPurchaseStat {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BuyerPurchaseStat that = (BuyerPurchaseStat) o;
+        PurchaseStat that = (PurchaseStat) o;
         return buyer.equals(that.buyer) &&
-                goodsSales.equals(that.goodsSales);
+                goodSales.equals(that.goodSales);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(buyer, goodsSales);
+        return Objects.hash(buyer, goodSales);
     }
 }
