@@ -115,6 +115,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where p.buyer_id = b.id\n" +
                 "    and p.good_id = g.id\n" +
                 "    and p.date between ? and ?\n" +
+                "    and TO_CHAR(p.date, 'dy') NOT IN ('sat', 'sun')\n" +
                 "group by b.id, g.id\n" +
                 "order by b.id, cost desc";
 
@@ -126,11 +127,10 @@ public class BuyerDao  extends JdbcDaoSupport {
 
     public Integer getNumberOfDays(LocalDate startDate, LocalDate endDate){
         String sql =
-                "select coalesce(count(q.date_set), 0) from\n" +
-                "(select p.date date_set\n" +
-                "from purchases p\n" +
-                "where p.date between ? and ?\n" +
-                "group by date) q";
+                "select coalesce(count(q.date), 0) num_days from\n" +
+                "(select gs.date date\n" +
+                "from generate_series(?, ?, interval '1 day') as gs\n" +
+                "where TO_CHAR(gs.date, 'dy') NOT IN ('sat', 'sun')) q";
 
         Object[] params = new Object[] { startDate, endDate };
         assert this.getJdbcTemplate() != null;

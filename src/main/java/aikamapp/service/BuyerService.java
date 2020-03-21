@@ -44,7 +44,7 @@ public class BuyerService {
         return buyerDao.getPassiveBuyers(limit);
     }
 
-    public TotalStat getTotalStat(LocalDate startDate, LocalDate endDate){
+    public TotalStat getTotalStat(String operation, LocalDate startDate, LocalDate endDate){
         List<PurchaseStat> purchases = buyerDao.getPurchaseStats(startDate, endDate);
         Map<Buyer, BuyerStat> buyerStats = new HashMap<>();
         BigDecimal totalCost = new BigDecimal(0);
@@ -64,7 +64,7 @@ public class BuyerService {
             avgCost = totalCost.divide(BigDecimal.valueOf(countBuyer), 2, RoundingMode.HALF_UP);
         }
 
-        return new TotalStat(totalDays, new HashSet<>(buyerStats.values()), totalCost, avgCost);
+        return new TotalStat(operation, totalDays, new HashSet<>(buyerStats.values()), totalCost, avgCost);
     }
 
 }

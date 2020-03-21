@@ -44,8 +44,8 @@ public class ControllerApp {
     }
 
     static class Stat{
-        public LocalDate startDate;
-        public LocalDate endDate;
+        public String startDate;
+        public String endDate;
     }
 
     public ControllerApp(ApplicationArguments applicationArguments, BuyerService buyerService) {
@@ -67,7 +67,11 @@ public class ControllerApp {
             }
         } else if (operation.toLowerCase().equals(STAT_OPERATION)){
             Stat stat = getOperation(Stat.class);
-            TotalStat totalStat = buyerService.getTotalStat(stat.startDate, stat.endDate);
+            TotalStat totalStat = buyerService.getTotalStat(
+                    operation,
+                    LocalDate.parse(stat.startDate),
+                    LocalDate.parse(stat.endDate)
+            );
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             try(FileWriter fw = new FileWriter(outputFileName)){
                 gson.toJson(totalStat, fw);

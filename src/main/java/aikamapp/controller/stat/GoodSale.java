@@ -1,21 +1,24 @@
 package aikamapp.controller.stat;
 
 import aikamapp.model.Good;
+import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public class GoodSale {
-    private final Good good;
+    @SerializedName("name")
+    private final String goodName;
+    @SerializedName("expenses")
     private final BigDecimal cost;
 
     public GoodSale(Good good, BigDecimal cost) {
-        this.good = good;
+        this.goodName = good.getTitle();
         this.cost = cost;
     }
 
-    public Good getGood() {
-        return good;
+    public String getGood() {
+        return goodName;
     }
 
     public BigDecimal getCost() {
@@ -25,21 +28,9 @@ public class GoodSale {
     @Override
     public String toString() {
         return "GoodsSale{" +
-                "good=" + good +
+                "goodName=" + goodName +
                 ", cost=" + cost +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GoodSale goodSale = (GoodSale) o;
-        return good.equals(goodSale.good);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(good);
-    }
 }
