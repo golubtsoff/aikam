@@ -1,0 +1,8 @@
+{
+  "criterias": [
+    {"lastName": "Иванов"},
+    {"productName": "Хлеб", "minTimes": 14},
+    {"minExpenses": 30000, "maxExpenses": 34000},
+    {"badCustomers": 3}
+  ]
+}

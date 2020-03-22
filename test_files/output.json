@@ -1,0 +1,196 @@
+{
+  "type": "stat",
+  "totalDays": 5,
+  "customers": [
+    {
+      "name": "Грин Рейчел",
+      "purchases": [
+        {
+          "name": "Колбаса",
+          "expenses": 1200
+        },
+        {
+          "name": "Сыр",
+          "expenses": 1000
+        },
+        {
+          "name": "Яблоки",
+          "expenses": 500
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 400
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 300
+        },
+        {
+          "name": "Молоко",
+          "expenses": 40
+        },
+        {
+          "name": "Хлеб",
+          "expenses": 22
+        }
+      ],
+      "totalExpenses": 3462
+    },
+    {
+      "name": "Бинг Чендлер",
+      "purchases": [
+        {
+          "name": "Колбаса",
+          "expenses": 1500
+        },
+        {
+          "name": "Яблоки",
+          "expenses": 375
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 300
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 180
+        },
+        {
+          "name": "Хлеб",
+          "expenses": 110
+        },
+        {
+          "name": "Молоко",
+          "expenses": 40
+        }
+      ],
+      "totalExpenses": 2505
+    },
+    {
+      "name": "Триббиани Джоуи",
+      "purchases": [
+        {
+          "name": "Сыр",
+          "expenses": 500
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 480
+        },
+        {
+          "name": "Колбаса",
+          "expenses": 300
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 200
+        },
+        {
+          "name": "Хлеб",
+          "expenses": 132
+        },
+        {
+          "name": "Яблоки",
+          "expenses": 125
+        },
+        {
+          "name": "Молоко",
+          "expenses": 40
+        }
+      ],
+      "totalExpenses": 1777
+    },
+    {
+      "name": "Буффе Фиби",
+      "purchases": [
+        {
+          "name": "Колбаса",
+          "expenses": 600
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 400
+        },
+        {
+          "name": "Яблоки",
+          "expenses": 375
+        },
+        {
+          "name": "Молоко",
+          "expenses": 200
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 180
+        },
+        {
+          "name": "Хлеб",
+          "expenses": 132
+        }
+      ],
+      "totalExpenses": 1887
+    },
+    {
+      "name": "Геллер Моника",
+      "purchases": [
+        {
+          "name": "Колбаса",
+          "expenses": 1200
+        },
+        {
+          "name": "Вино",
+          "expenses": 990
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 300
+        },
+        {
+          "name": "Яблоки",
+          "expenses": 125
+        },
+        {
+          "name": "Молоко",
+          "expenses": 120
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 100
+        }
+      ],
+      "totalExpenses": 2835
+    },
+    {
+      "name": "Геллер Росс",
+      "purchases": [
+        {
+          "name": "Яблоки",
+          "expenses": 375
+        },
+        {
+          "name": "Колбаса",
+          "expenses": 300
+        },
+        {
+          "name": "Шоколад",
+          "expenses": 240
+        },
+        {
+          "name": "Помидоры",
+          "expenses": 100
+        },
+        {
+          "name": "Молоко",
+          "expenses": 80
+        },
+        {
+          "name": "Хлеб",
+          "expenses": 44
+        }
+      ],
+      "totalExpenses": 1139
+    }
+  ],
+  "totalExpenses": 27045,
+  "avgExpenses": 4507.50
+}

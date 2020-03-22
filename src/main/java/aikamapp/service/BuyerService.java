@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -66,5 +67,4 @@ public class BuyerService {
 
         return new TotalStat(operation, totalDays, new HashSet<>(buyerStats.values()), totalCost, avgCost);
     }
-
 }
