@@ -7,16 +7,12 @@ import aikamapp.controller.stat.TotalStat;
 import aikamapp.service.BuyerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
-import java.awt.event.WindowStateListener;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
@@ -56,14 +52,18 @@ public class ControllerApp {
         }
     }
 
-    public ControllerApp(ApplicationArguments applicationArguments, BuyerService buyerService) {
-        operation = applicationArguments.getSourceArgs()[0];
-        inputFileName = applicationArguments.getSourceArgs()[1];
-        outputFileName = applicationArguments.getSourceArgs()[2];
-        this.buyerService = buyerService;
+    public ControllerApp(ApplicationArguments applicationArguments, BuyerService buyerService) throws Exception {
+        try {
+            operation = applicationArguments.getSourceArgs()[0];
+            inputFileName = applicationArguments.getSourceArgs()[1];
+            outputFileName = applicationArguments.getSourceArgs()[2];
+            this.buyerService = buyerService;
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new Exception("Ошибка в указании аргументов приложения", e);
+        }
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         try{
             if (operation.toLowerCase().equals(SEARCH_OPERATION)){
                 Search search = getOperation(Search.class);
@@ -96,15 +96,23 @@ public class ControllerApp {
 
     private <T> T getOperation(Class<T> cl) throws Exception {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try(FileReader fr = new FileReader(inputFileName)){
-            return gson.fromJson(fr, cl);
+        try(BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                        new FileInputStream(inputFileName), StandardCharsets.UTF_8))){
+            return gson.fromJson(reader, cl);
+        } catch (FileNotFoundException e){
+            throw new Exception("Входной файл не найден", e);
         }
     }
 
-    private <T> void writeToFile(T obj, String ... exclusionFields) throws IOException {
+    private <T> void writeToFile(T obj, String ... exclusionFields) throws Exception {
         Gson gson = getGsonWithExclusionFields(exclusionFields);
-        try(FileWriter fw = new FileWriter(outputFileName)){
-            gson.toJson(obj, fw);
+        try(BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream(outputFileName), StandardCharsets.UTF_8))){
+            gson.toJson(obj, writer);
+        } catch (FileNotFoundException e){
+            throw new Exception("Отказано в доступе к выходному файлу", e);
         }
     }
 
