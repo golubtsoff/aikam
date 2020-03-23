@@ -3,14 +3,13 @@ package aikamapp.controller.dto;
 import aikamapp.controller.criteria.Criteria;
 import aikamapp.model.Buyer;
 import aikamapp.service.BuyerService;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CriteriasDto {
-    private String type;
-    private List<CriteriaDto> results;
+    private final String type;
+    private final List<CriteriaDto> results;
 
     public static class CriteriaDto{
         public Criteria criteria;

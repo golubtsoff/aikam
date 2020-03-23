@@ -5,22 +5,22 @@ import aikamapp.controller.stat.BuyerStat;
 import aikamapp.controller.stat.TotalStat;
 import aikamapp.dao.BuyerDao;
 import aikamapp.model.Buyer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service("buyerService")
 @Transactional
 public class BuyerService {
-    @Autowired
-    private BuyerDao buyerDao;
+    private final BuyerDao buyerDao;
+
+    public BuyerService(BuyerDao buyerDao) {
+        this.buyerDao = buyerDao;
+    }
 
     public Buyer get(Long id){
         return buyerDao.get(id);

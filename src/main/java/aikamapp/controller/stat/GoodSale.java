@@ -4,7 +4,6 @@ import aikamapp.model.Good;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 public class GoodSale {
     @SerializedName("name")

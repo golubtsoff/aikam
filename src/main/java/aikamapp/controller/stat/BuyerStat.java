@@ -6,13 +6,12 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class BuyerStat {
     @SerializedName("name")
     private final String buyerName;
     @SerializedName("purchases")
-    private List<GoodSale> goodSales;
+    private final List<GoodSale> goodSales;
     @SerializedName("totalExpenses")
     private BigDecimal totalCost;
 
