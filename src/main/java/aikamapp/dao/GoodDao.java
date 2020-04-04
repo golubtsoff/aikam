@@ -28,11 +28,9 @@ public class GoodDao extends JdbcDaoSupport {
     public Good get(Long id){
         String sql = "select * from goods g\n" +
                 "where g.id = ?";
-
-        Object[] params = new Object[] { id };
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, GOOD_MAPPER);
+            return this.getJdbcTemplate().queryForObject(sql, GOOD_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

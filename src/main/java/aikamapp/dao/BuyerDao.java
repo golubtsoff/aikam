@@ -37,18 +37,15 @@ public class BuyerDao  extends JdbcDaoSupport {
                 rs.getString("firstname"),
                 rs.getString("lastname")
         );
-
         Good good = new Good(
                 rs.getLong("gid"),
                 rs.getString("title"),
                 rs.getBigDecimal("price")
         );
-
         GoodSale goodSale = new GoodSale(
                 good,
                 rs.getBigDecimal("cost")
         );
-
         return new PurchaseStat(buyer, goodSale);
     };
 
@@ -73,10 +70,9 @@ public class BuyerDao  extends JdbcDaoSupport {
         String sql = "select * from buyers b\n" +
                 "where b.id = ?";
 
-        Object[] params = new Object[] { id };
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, BUYER_MAPPER);
+            return this.getJdbcTemplate().queryForObject(sql, BUYER_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -94,9 +90,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "select * from buyers b\n" +
                 "where upper(b.lastname) = upper(?)";
 
-        Object[] params = new Object[] { lastname };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
+        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, lastname);
     }
 
     public List<Buyer> getByGoodAndCountOfPurchases(String goodsTitle, int count){
@@ -111,9 +106,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "      group by b.id) q\n" +
                 "where q.number_of_purchases >= ?";
 
-        Object[] params = new Object[] { goodsTitle, count };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
+        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, goodsTitle, count);
     }
 
     public List<Buyer> getByCostOfPurchases(BigDecimal minCost, BigDecimal maxCost){
@@ -128,9 +122,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where q.cost_of_purchases >=?\n" +
                 "  and q.cost_of_purchases <= ?";
 
-        Object[] params = new Object[] { minCost, maxCost };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
+        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, minCost, maxCost);
     }
 
     public List<Buyer> getPassiveBuyers(int limit){
@@ -143,9 +136,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "order by number_of_purchases\n" +
                 "limit ?";
 
-        Object[] params = new Object[] { limit };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
+        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, limit);
     }
 
     public List<PurchaseStat> getPurchaseStats(LocalDate startDate, LocalDate endDate){
@@ -160,9 +152,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "group by b.id, g.id\n" +
                 "order by b.id, cost desc";
 
-        Object[] params = new Object[] { startDate, endDate };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, PURCHASE_STAT_MAPPER);
+        return this.getJdbcTemplate().query(sql, PURCHASE_STAT_MAPPER, startDate, endDate);
     }
 
     public Integer getNumberOfDays(LocalDate startDate, LocalDate endDate){
@@ -172,9 +163,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "from generate_series(?, ?, interval '1 day') as gs\n" +
                 "where TO_CHAR(gs.date, 'dy') NOT IN ('sat', 'sun')) q";
 
-        Object[] params = new Object[] { startDate, endDate };
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().queryForObject(sql, params, Integer.class);
+        return this.getJdbcTemplate().queryForObject(sql, Integer.class, startDate, endDate);
     }
 
 }

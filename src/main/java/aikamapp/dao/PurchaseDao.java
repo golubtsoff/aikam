@@ -48,10 +48,9 @@ public class PurchaseDao extends JdbcDaoSupport {
                 "and p.buyer_id = b.id\n" +
                 "and p.good_id = g.id";
 
-        Object[] params = new Object[] { id };
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, PURCHASE_MAPPER);
+            return this.getJdbcTemplate().queryForObject(sql, PURCHASE_MAPPER, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -73,10 +72,8 @@ public class PurchaseDao extends JdbcDaoSupport {
         String sql = "insert into purchases (buyer_id, good_id, date) " +
                 "values (?, ?, ?)";
 
-        Object[] params = new Object[] { buyerId, goodId, date};
-
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().update(sql, params);
+        return this.getJdbcTemplate().update(sql, buyerId, goodId, date);
     }
 
     public int create(long buyerId, long goodId){
