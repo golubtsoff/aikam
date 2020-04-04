@@ -1,13 +1,14 @@
 package aikamapp.dao;
 
-import aikamapp.mapper.GoodMapper;
 import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.util.List;
 
 @Repository("goodDao")
@@ -18,15 +19,20 @@ public class GoodDao extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
+    private final RowMapper<Good> GOOD_MAPPER = (ResultSet rs, int rowNum) -> new Good(
+            rs.getLong("id"),
+            rs.getString("title"),
+            rs.getBigDecimal("price")
+    );
+
     public Good get(Long id){
         String sql = "select * from goods g\n" +
                 "where g.id = ?";
 
         Object[] params = new Object[] { id };
-        GoodMapper mapper = new GoodMapper();
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, mapper);
+            return this.getJdbcTemplate().queryForObject(sql, params, GOOD_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -35,8 +41,7 @@ public class GoodDao extends JdbcDaoSupport {
     public List<Good> getAll(){
         String sql = "select * from goods g";
 
-        GoodMapper mapper = new GoodMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, mapper);
+        return this.getJdbcTemplate().query(sql, GOOD_MAPPER);
     }
 }

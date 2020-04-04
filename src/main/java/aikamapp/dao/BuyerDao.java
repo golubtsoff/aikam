@@ -1,16 +1,19 @@
 package aikamapp.dao;
 
+import aikamapp.controller.stat.GoodSale;
 import aikamapp.controller.stat.PurchaseStat;
-import aikamapp.mapper.BuyerMapper;
-import aikamapp.mapper.PurchaseStatMapper;
 import aikamapp.model.Buyer;
+import aikamapp.model.Good;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,15 +25,58 @@ public class BuyerDao  extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
+    private final RowMapper<Buyer> BUYER_MAPPER = (ResultSet rs, int rowNum) -> new Buyer(
+            rs.getLong("id"),
+            rs.getString("firstname"),
+            rs.getString("lastname")
+    );
+
+    private final RowMapper<PurchaseStat> PURCHASE_STAT_MAPPER = (ResultSet rs, int rowNum) -> {
+        Buyer buyer = new Buyer(
+                rs.getLong("bid"),
+                rs.getString("firstname"),
+                rs.getString("lastname")
+        );
+
+        Good good = new Good(
+                rs.getLong("gid"),
+                rs.getString("title"),
+                rs.getBigDecimal("price")
+        );
+
+        GoodSale goodSale = new GoodSale(
+                good,
+                rs.getBigDecimal("cost")
+        );
+
+        return new PurchaseStat(buyer, goodSale);
+    };
+
+    public PurchaseStat mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Long bid = rs.getLong("bid");
+        String firstname = rs.getString("firstname");
+        String lastname = rs.getString("lastname");
+        Buyer buyer = new Buyer(bid, firstname, lastname);
+
+        Long gid = rs.getLong("gid");
+        String title = rs.getString("title");
+        BigDecimal price = rs.getBigDecimal("price");
+        Good good = new Good(gid, title, price);
+
+        BigDecimal cost = rs.getBigDecimal("cost");
+        GoodSale goodSale = new GoodSale(good, cost);
+
+        return new PurchaseStat(buyer, goodSale);
+    }
+
     public Buyer get(Long id){
         String sql = "select * from buyers b\n" +
                 "where b.id = ?";
 
         Object[] params = new Object[] { id };
-        BuyerMapper mapper = new BuyerMapper();
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, mapper);
+            return this.getJdbcTemplate().queryForObject(sql, params, BUYER_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -39,9 +85,8 @@ public class BuyerDao  extends JdbcDaoSupport {
     public List<Buyer> getAll(){
         String sql = "select * from buyers b";
 
-        BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, mapper);
+        return this.getJdbcTemplate().query(sql, BUYER_MAPPER);
     }
 
     public List<Buyer> getByLastname(String lastname){
@@ -50,9 +95,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where upper(b.lastname) = upper(?)";
 
         Object[] params = new Object[] { lastname };
-        BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, mapper);
+        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
     }
 
     public List<Buyer> getByGoodAndCountOfPurchases(String goodsTitle, int count){
@@ -68,9 +112,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where q.number_of_purchases >= ?";
 
         Object[] params = new Object[] { goodsTitle, count };
-        BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, mapper);
+        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
     }
 
     public List<Buyer> getByCostOfPurchases(BigDecimal minCost, BigDecimal maxCost){
@@ -86,9 +129,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "  and q.cost_of_purchases <= ?";
 
         Object[] params = new Object[] { minCost, maxCost };
-        BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, mapper);
+        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
     }
 
     public List<Buyer> getPassiveBuyers(int limit){
@@ -102,9 +144,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "limit ?";
 
         Object[] params = new Object[] { limit };
-        BuyerMapper mapper = new BuyerMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, mapper);
+        return this.getJdbcTemplate().query(sql, params, BUYER_MAPPER);
     }
 
     public List<PurchaseStat> getPurchaseStats(LocalDate startDate, LocalDate endDate){
@@ -120,9 +161,8 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "order by b.id, cost desc";
 
         Object[] params = new Object[] { startDate, endDate };
-        PurchaseStatMapper mapper = new PurchaseStatMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, params, mapper);
+        return this.getJdbcTemplate().query(sql, params, PURCHASE_STAT_MAPPER);
     }
 
     public Integer getNumberOfDays(LocalDate startDate, LocalDate endDate){

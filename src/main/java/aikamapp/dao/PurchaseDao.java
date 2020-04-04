@@ -1,15 +1,17 @@
 package aikamapp.dao;
 
-import aikamapp.mapper.PurchaseMapper;
+import aikamapp.model.Buyer;
+import aikamapp.model.Good;
 import aikamapp.model.Purchase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository("purchaseDao")
@@ -19,6 +21,23 @@ public class PurchaseDao extends JdbcDaoSupport {
     public PurchaseDao(DataSource dataSource) {
         this.setDataSource(dataSource);
     }
+
+    private final RowMapper<Purchase> PURCHASE_MAPPER = (ResultSet rs, int rowNum) -> {
+        Long id = rs.getLong("pid");
+        LocalDate date = (rs.getDate("date")).toLocalDate();
+
+        Buyer buyer = new Buyer(
+                rs.getLong("bid"),
+                rs.getString("firstname"),
+                rs.getString("lastname")
+        );
+        Good good = new Good(
+                rs.getLong("gid"),
+                rs.getString("title"),
+                rs.getBigDecimal("price")
+        );
+        return new Purchase(id, buyer, good, date);
+    };
 
     public Purchase get(Long id){
         String sql = "select p.id pid, p.date,\n" +
@@ -30,10 +49,9 @@ public class PurchaseDao extends JdbcDaoSupport {
                 "and p.good_id = g.id";
 
         Object[] params = new Object[] { id };
-        PurchaseMapper mapper = new PurchaseMapper();
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, params, mapper);
+            return this.getJdbcTemplate().queryForObject(sql, params, PURCHASE_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -47,16 +65,14 @@ public class PurchaseDao extends JdbcDaoSupport {
                 "where p.buyer_id = b.id\n" +
                 "and p.good_id = g.id";
 
-        PurchaseMapper mapper = new PurchaseMapper();
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, mapper);
+        return this.getJdbcTemplate().query(sql, PURCHASE_MAPPER);
     }
 
     public int create(long buyerId, long goodId, LocalDate date){
         String sql = "insert into purchases (buyer_id, good_id, date) " +
                 "values (?, ?, ?)";
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Object[] params = new Object[] { buyerId, goodId, date};
 
         assert this.getJdbcTemplate() != null;
