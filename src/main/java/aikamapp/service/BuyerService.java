@@ -48,7 +48,7 @@ public class BuyerService {
     public TotalStat getTotalStat(String operation, LocalDate startDate, LocalDate endDate){
         List<PurchaseStat> purchases = buyerDao.getPurchaseStats(startDate, endDate);
         Map<Buyer, BuyerStat> buyerStats = new HashMap<>();
-        BigDecimal totalCost = new BigDecimal(0);
+        BigDecimal totalCost = BigDecimal.ZERO;
         for(PurchaseStat purchaseStat : purchases){
             if (buyerStats.containsKey(purchaseStat.getBuyer())){
                 BuyerStat buyerStat = buyerStats.get(purchaseStat.getBuyer());
@@ -59,7 +59,7 @@ public class BuyerService {
             totalCost = totalCost.add(purchaseStat.getGoodsSale().getCost());
         }
         int totalDays = buyerDao.getNumberOfDays(startDate, endDate);
-        BigDecimal avgCost = new BigDecimal(0);
+        BigDecimal avgCost = BigDecimal.ZERO;
         int countBuyer = buyerStats.keySet().size();
         if ( countBuyer > 0){
             avgCost = totalCost.divide(BigDecimal.valueOf(countBuyer), 2, RoundingMode.HALF_UP);

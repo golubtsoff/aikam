@@ -22,7 +22,7 @@ public class PurchaseDao extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
-    private final RowMapper<Purchase> PURCHASE_MAPPER = (ResultSet rs, int rowNum) -> {
+    private final RowMapper<Purchase> purchaseMapper = (ResultSet rs, int rowNum) -> {
         Long id = rs.getLong("pid");
         LocalDate date = (rs.getDate("date")).toLocalDate();
 
@@ -50,7 +50,7 @@ public class PurchaseDao extends JdbcDaoSupport {
 
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, PURCHASE_MAPPER, id);
+            return this.getJdbcTemplate().queryForObject(sql, purchaseMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -65,7 +65,7 @@ public class PurchaseDao extends JdbcDaoSupport {
                 "and p.good_id = g.id";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, PURCHASE_MAPPER);
+        return this.getJdbcTemplate().query(sql, purchaseMapper);
     }
 
     public int create(long buyerId, long goodId, LocalDate date){

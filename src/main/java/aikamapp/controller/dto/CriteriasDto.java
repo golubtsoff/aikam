@@ -12,8 +12,8 @@ public class CriteriasDto {
     private final List<CriteriaDto> results;
 
     public static class CriteriaDto{
-        public Criteria criteria;
-        public List<Buyer> results;
+        private Criteria criteria;
+        private List<Buyer> results;
     }
 
     public CriteriasDto(String type, List<Criteria> criterias, BuyerService service){

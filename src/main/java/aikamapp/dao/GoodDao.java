@@ -19,7 +19,7 @@ public class GoodDao extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
-    private final RowMapper<Good> GOOD_MAPPER = (ResultSet rs, int rowNum) -> new Good(
+    private final RowMapper<Good> goodMapper = (ResultSet rs, int rowNum) -> new Good(
             rs.getLong("id"),
             rs.getString("title"),
             rs.getBigDecimal("price")
@@ -30,7 +30,7 @@ public class GoodDao extends JdbcDaoSupport {
                 "where g.id = ?";
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, GOOD_MAPPER, id);
+            return this.getJdbcTemplate().queryForObject(sql, goodMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -40,6 +40,6 @@ public class GoodDao extends JdbcDaoSupport {
         String sql = "select * from goods g";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, GOOD_MAPPER);
+        return this.getJdbcTemplate().query(sql, goodMapper);
     }
 }

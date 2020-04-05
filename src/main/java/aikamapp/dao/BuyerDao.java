@@ -25,13 +25,13 @@ public class BuyerDao  extends JdbcDaoSupport {
         this.setDataSource(dataSource);
     }
 
-    private final RowMapper<Buyer> BUYER_MAPPER = (ResultSet rs, int rowNum) -> new Buyer(
+    private final RowMapper<Buyer> buyerMapper = (ResultSet rs, int rowNum) -> new Buyer(
             rs.getLong("id"),
             rs.getString("firstname"),
             rs.getString("lastname")
     );
 
-    private final RowMapper<PurchaseStat> PURCHASE_STAT_MAPPER = (ResultSet rs, int rowNum) -> {
+    private final RowMapper<PurchaseStat> purchaseStatMapper = (ResultSet rs, int rowNum) -> {
         Buyer buyer = new Buyer(
                 rs.getLong("bid"),
                 rs.getString("firstname"),
@@ -72,7 +72,7 @@ public class BuyerDao  extends JdbcDaoSupport {
 
         try {
             assert this.getJdbcTemplate() != null;
-            return this.getJdbcTemplate().queryForObject(sql, BUYER_MAPPER, id);
+            return this.getJdbcTemplate().queryForObject(sql, buyerMapper, id);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -82,7 +82,7 @@ public class BuyerDao  extends JdbcDaoSupport {
         String sql = "select * from buyers b";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, BUYER_MAPPER);
+        return this.getJdbcTemplate().query(sql, buyerMapper);
     }
 
     public List<Buyer> getByLastname(String lastname){
@@ -91,7 +91,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where upper(b.lastname) = upper(?)";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, lastname);
+        return this.getJdbcTemplate().query(sql, buyerMapper, lastname);
     }
 
     public List<Buyer> getByGoodAndCountOfPurchases(String goodsTitle, int count){
@@ -107,7 +107,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "where q.number_of_purchases >= ?";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, goodsTitle, count);
+        return this.getJdbcTemplate().query(sql, buyerMapper, goodsTitle, count);
     }
 
     public List<Buyer> getByCostOfPurchases(BigDecimal minCost, BigDecimal maxCost){
@@ -123,7 +123,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "  and q.cost_of_purchases <= ?";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, minCost, maxCost);
+        return this.getJdbcTemplate().query(sql, buyerMapper, minCost, maxCost);
     }
 
     public List<Buyer> getPassiveBuyers(int limit){
@@ -137,7 +137,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "limit ?";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, BUYER_MAPPER, limit);
+        return this.getJdbcTemplate().query(sql, buyerMapper, limit);
     }
 
     public List<PurchaseStat> getPurchaseStats(LocalDate startDate, LocalDate endDate){
@@ -153,7 +153,7 @@ public class BuyerDao  extends JdbcDaoSupport {
                 "order by b.id, cost desc";
 
         assert this.getJdbcTemplate() != null;
-        return this.getJdbcTemplate().query(sql, PURCHASE_STAT_MAPPER, startDate, endDate);
+        return this.getJdbcTemplate().query(sql, purchaseStatMapper, startDate, endDate);
     }
 
     public Integer getNumberOfDays(LocalDate startDate, LocalDate endDate){

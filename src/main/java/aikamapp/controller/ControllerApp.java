@@ -24,28 +24,28 @@ public class ControllerApp {
     private final String inputFileName;
     private final String outputFileName;
 
-    private final String SEARCH_OPERATION = "search";
-    private final String STAT_OPERATION = "stat";
-    private final String ERROR_TYPE = "error";
-    private final String LAST_NAME_KEY_CRITERIA = "lastName";
-    private final String PRODUCT_NAME_KEY_CRITERIA = "productName";
-    private final String MIN_TIMES_KEY_CRITERIA = "minTimes";
-    private final String MIN_EXPENSES_KEY_CRITERIA = "minExpenses";
-    private final String MAX_EXPENSES_KEY_CRITERIA = "maxExpenses";
-    private final String BAD_CUSTOMERS_KEY_CRITERIA = "badCustomers";
+    private static final String SEARCH_OPERATION = "search";
+    private static final String STAT_OPERATION = "stat";
+    private static final String ERROR_TYPE = "error";
+    private static final String LAST_NAME_KEY_CRITERIA = "lastName";
+    private static final String PRODUCT_NAME_KEY_CRITERIA = "productName";
+    private static final String MIN_TIMES_KEY_CRITERIA = "minTimes";
+    private static final String MIN_EXPENSES_KEY_CRITERIA = "minExpenses";
+    private static final String MAX_EXPENSES_KEY_CRITERIA = "maxExpenses";
+    private static final String BAD_CUSTOMERS_KEY_CRITERIA = "badCustomers";
 
-    static class Search{
-        public List<Map<String, String>> criterias;
+    private static class Search{
+        private List<Map<String, String>> criterias;
     }
 
-    static class Stat{
-        public String startDate;
-        public String endDate;
+    private static class Stat{
+        private String startDate;
+        private String endDate;
     }
 
-    private class Error{
-        public final String type = ERROR_TYPE;
-        public final String message;
+    private static class Error{
+        private static final String TYPE = ERROR_TYPE;
+        private final String message;
 
         Error(String message){
             this.message = message;
@@ -65,12 +65,12 @@ public class ControllerApp {
 
     public void run() throws Exception {
         try{
-            if (operation.toLowerCase().equals(SEARCH_OPERATION)){
+            if (operation.equalsIgnoreCase(SEARCH_OPERATION)){
                 Search search = getOperation(Search.class);
-                List<Criteria> criterias = getCriterias(search);
+                List<Criteria> criterias = getCriteriaList(search);
                 CriteriasDto criteriasDto = new CriteriasDto(operation, criterias, buyerService);
                 writeToFile(criteriasDto, "id");
-            } else if (operation.toLowerCase().equals(STAT_OPERATION)){
+            } else if (operation.equalsIgnoreCase(STAT_OPERATION)){
                 try {
                     Stat stat = getOperation(Stat.class);
                     if (stat.startDate == null || stat.endDate == null){
@@ -124,47 +124,68 @@ public class ControllerApp {
                 .create();
     }
 
-    private List<Criteria> getCriterias(Search search) throws Exception {
+    private List<Criteria> getCriteriaList(Search search) throws Exception {
         if (search.criterias == null){
             throw new Exception("Отсутствуют критерии для выборки");
         }
-        List<Criteria> criterias = new ArrayList<>();
+        List<Criteria> criteriaList = new ArrayList<>();
         for(Map<String, String> map : search.criterias){
-            Set<String> keySet = map.keySet();
-            Criteria criteria = null;
-            if (keySet.contains(LAST_NAME_KEY_CRITERIA) && keySet.size() == 1){
-                criteria = new LastNameCriteria(map.get(LAST_NAME_KEY_CRITERIA));
-            } else if (keySet.contains(PRODUCT_NAME_KEY_CRITERIA) && keySet.contains(MIN_TIMES_KEY_CRITERIA ) && keySet.size() == 2){
-                try{
-                    criteria = new GoodAndCountOfPurchasesCriteria(
-                            map.get(PRODUCT_NAME_KEY_CRITERIA),
-                            Integer.parseInt(map.get(MIN_TIMES_KEY_CRITERIA))
-                    );
-                } catch (NumberFormatException e){
-                    throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
-                }
-            } else if (keySet.contains(MIN_EXPENSES_KEY_CRITERIA) && keySet.contains(MAX_EXPENSES_KEY_CRITERIA) && keySet.size() == 2){
-                try{
-                    criteria = new CostOfPurchasesCriteria(
-                            new BigDecimal(map.get(MIN_EXPENSES_KEY_CRITERIA)),
-                            new BigDecimal(map.get(MAX_EXPENSES_KEY_CRITERIA))
-                    );
-                } catch (NumberFormatException e){
-                    throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
-                }
-            } else if (keySet.contains(BAD_CUSTOMERS_KEY_CRITERIA) && keySet.size() == 1){
-                try{
-                    criteria = new PassiveBuyersCriteria(Integer.parseInt(map.get(BAD_CUSTOMERS_KEY_CRITERIA)));
-                } catch (NumberFormatException e){
-                    throw new Exception("Число пассивных покупателей должно быть целым положительным числом", e);
-                }
-            }
+            Criteria criteria = getCriteria(map);
             if (criteria != null){
-                criterias.add(criteria);
+                criteriaList.add(criteria);
             } else {
-                throw new Exception("Неизвестный критерий выборки: " + keySet.toString());
+                throw new Exception("Неизвестный критерий выборки: " + map.keySet().toString());
             }
         }
-        return criterias;
+        return criteriaList;
+    }
+
+    private Criteria getCriteria(Map<String, String> rawCriteria) throws Exception {
+        Set<String> keySet = rawCriteria.keySet();
+        if (keySet.contains(LAST_NAME_KEY_CRITERIA) && keySet.size() == 1){
+            return getLastNameCriteria(rawCriteria);
+        } else if (keySet.contains(PRODUCT_NAME_KEY_CRITERIA) && keySet.contains(MIN_TIMES_KEY_CRITERIA ) && keySet.size() == 2){
+            return getGoodAndCountOfPurchasesCriteria(rawCriteria);
+        } else if (keySet.contains(MIN_EXPENSES_KEY_CRITERIA) && keySet.contains(MAX_EXPENSES_KEY_CRITERIA) && keySet.size() == 2){
+            return getCostOfPurchasesCriteria(rawCriteria);
+        } else if (keySet.contains(BAD_CUSTOMERS_KEY_CRITERIA) && keySet.size() == 1){
+            return getPassiveBuyersCriteria(rawCriteria);
+        } else {
+            return null;
+        }
+    }
+
+    private Criteria getLastNameCriteria(Map<String, String> rawCriteria){
+        return new LastNameCriteria(rawCriteria.get(LAST_NAME_KEY_CRITERIA));
+    }
+
+    private Criteria getGoodAndCountOfPurchasesCriteria(Map<String, String> rawCriteria) throws Exception {
+        try{
+            return new GoodAndCountOfPurchasesCriteria(
+                    rawCriteria.get(PRODUCT_NAME_KEY_CRITERIA),
+                    Integer.parseInt(rawCriteria.get(MIN_TIMES_KEY_CRITERIA))
+            );
+        } catch (NumberFormatException e){
+            throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
+        }
+    }
+
+    private Criteria getCostOfPurchasesCriteria(Map<String, String> rawCriteria) throws Exception {
+        try{
+            return new CostOfPurchasesCriteria(
+                    new BigDecimal(rawCriteria.get(MIN_EXPENSES_KEY_CRITERIA)),
+                    new BigDecimal(rawCriteria.get(MAX_EXPENSES_KEY_CRITERIA))
+            );
+        } catch (NumberFormatException e){
+            throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
+        }
+    }
+
+    private Criteria getPassiveBuyersCriteria(Map<String, String> rawCriteria) throws Exception {
+        try{
+            return new PassiveBuyersCriteria(Integer.parseInt(rawCriteria.get(BAD_CUSTOMERS_KEY_CRITERIA)));
+        } catch (NumberFormatException e){
+            throw new Exception("Число пассивных покупателей должно быть целым положительным числом", e);
+        }
     }
 }

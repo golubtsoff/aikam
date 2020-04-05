@@ -18,7 +18,7 @@ public class BuyerStat {
     public BuyerStat(Buyer buyer) {
         this.buyerName = buyer.getLastName().concat(" ").concat(buyer.getFirstName());
         this.goodSales = new ArrayList<>();
-        this.totalCost = new BigDecimal(0);
+        this.totalCost = BigDecimal.ZERO;
     }
 
     public String getBuyerName() {
