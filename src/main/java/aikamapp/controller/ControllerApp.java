@@ -125,17 +125,12 @@ public class ControllerApp {
     }
 
     private List<Criteria> getCriteriaList(Search search) throws Exception {
-        if (search.criterias == null){
-            throw new Exception("Отсутствуют критерии для выборки");
-        }
+        Objects.requireNonNull(search.criterias, "Отсутствуют критерии для выборки");
         List<Criteria> criteriaList = new ArrayList<>();
         for(Map<String, String> map : search.criterias){
             Criteria criteria = getCriteria(map);
-            if (criteria != null){
-                criteriaList.add(criteria);
-            } else {
-                throw new Exception("Неизвестный критерий выборки: " + map.keySet().toString());
-            }
+            Objects.requireNonNull(criteria, "Неизвестный критерий выборки: " + map.keySet().toString());
+            criteriaList.add(criteria);
         }
         return criteriaList;
     }
