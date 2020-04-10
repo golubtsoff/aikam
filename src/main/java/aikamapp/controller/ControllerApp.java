@@ -11,7 +11,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -27,12 +26,6 @@ public class ControllerApp {
     private static final String SEARCH_OPERATION = "search";
     private static final String STAT_OPERATION = "stat";
     private static final String ERROR_TYPE = "error";
-    private static final String LAST_NAME_KEY_CRITERIA = "lastName";
-    private static final String PRODUCT_NAME_KEY_CRITERIA = "productName";
-    private static final String MIN_TIMES_KEY_CRITERIA = "minTimes";
-    private static final String MIN_EXPENSES_KEY_CRITERIA = "minExpenses";
-    private static final String MAX_EXPENSES_KEY_CRITERIA = "maxExpenses";
-    private static final String BAD_CUSTOMERS_KEY_CRITERIA = "badCustomers";
 
     private static class Search{
         private List<Map<String, String>> criterias;
@@ -124,63 +117,14 @@ public class ControllerApp {
                 .create();
     }
 
-    private List<Criteria> getCriteriaList(Search search) throws Exception {
+    private List<Criteria> getCriteriaList(Search search) {
         Objects.requireNonNull(search.criterias, "Отсутствуют критерии для выборки");
         List<Criteria> criteriaList = new ArrayList<>();
         for(Map<String, String> map : search.criterias){
-            Criteria criteria = getCriteria(map);
+            Criteria criteria = CriteriaFactory.process(map);
             Objects.requireNonNull(criteria, "Неизвестный критерий выборки: " + map.keySet().toString());
             criteriaList.add(criteria);
         }
         return criteriaList;
-    }
-
-    private Criteria getCriteria(Map<String, String> rawCriteria) throws Exception {
-        Set<String> keySet = rawCriteria.keySet();
-        if (keySet.contains(LAST_NAME_KEY_CRITERIA) && keySet.size() == 1){
-            return getLastNameCriteria(rawCriteria);
-        } else if (keySet.contains(PRODUCT_NAME_KEY_CRITERIA) && keySet.contains(MIN_TIMES_KEY_CRITERIA ) && keySet.size() == 2){
-            return getGoodAndCountOfPurchasesCriteria(rawCriteria);
-        } else if (keySet.contains(MIN_EXPENSES_KEY_CRITERIA) && keySet.contains(MAX_EXPENSES_KEY_CRITERIA) && keySet.size() == 2){
-            return getCostOfPurchasesCriteria(rawCriteria);
-        } else if (keySet.contains(BAD_CUSTOMERS_KEY_CRITERIA) && keySet.size() == 1){
-            return getPassiveBuyersCriteria(rawCriteria);
-        } else {
-            return null;
-        }
-    }
-
-    private Criteria getLastNameCriteria(Map<String, String> rawCriteria){
-        return new LastNameCriteria(rawCriteria.get(LAST_NAME_KEY_CRITERIA));
-    }
-
-    private Criteria getGoodAndCountOfPurchasesCriteria(Map<String, String> rawCriteria) throws Exception {
-        try{
-            return new GoodAndCountOfPurchasesCriteria(
-                    rawCriteria.get(PRODUCT_NAME_KEY_CRITERIA),
-                    Integer.parseInt(rawCriteria.get(MIN_TIMES_KEY_CRITERIA))
-            );
-        } catch (NumberFormatException e){
-            throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
-        }
-    }
-
-    private Criteria getCostOfPurchasesCriteria(Map<String, String> rawCriteria) throws Exception {
-        try{
-            return new CostOfPurchasesCriteria(
-                    new BigDecimal(rawCriteria.get(MIN_EXPENSES_KEY_CRITERIA)),
-                    new BigDecimal(rawCriteria.get(MAX_EXPENSES_KEY_CRITERIA))
-            );
-        } catch (NumberFormatException e){
-            throw new Exception("Число покупок должно быть целым неотрицательным числом", e);
-        }
-    }
-
-    private Criteria getPassiveBuyersCriteria(Map<String, String> rawCriteria) throws Exception {
-        try{
-            return new PassiveBuyersCriteria(Integer.parseInt(rawCriteria.get(BAD_CUSTOMERS_KEY_CRITERIA)));
-        } catch (NumberFormatException e){
-            throw new Exception("Число пассивных покупателей должно быть целым положительным числом", e);
-        }
     }
 }

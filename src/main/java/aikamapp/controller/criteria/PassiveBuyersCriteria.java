@@ -10,11 +10,11 @@ public class PassiveBuyersCriteria implements Criteria {
     @SerializedName("badCustomers")
     private final int limit;
 
-    public PassiveBuyersCriteria(int limit) throws Exception {
+    public PassiveBuyersCriteria(int limit) {
         super();
         this.limit = limit;
         if (limit < 1){
-            throw new Exception("Число пассивных покупателей должно быть целым положительным числом");
+            throw new RuntimeException("Число пассивных покупателей должно быть целым положительным числом");
         }
     }
 

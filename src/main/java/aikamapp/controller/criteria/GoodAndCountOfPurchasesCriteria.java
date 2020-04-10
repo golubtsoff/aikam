@@ -12,12 +12,12 @@ public class GoodAndCountOfPurchasesCriteria implements Criteria {
     @SerializedName("minTimes")
     private final int count;
 
-    public GoodAndCountOfPurchasesCriteria(String goodsTitle, int count) throws Exception {
+    public GoodAndCountOfPurchasesCriteria(String goodsTitle, int count) {
         super();
         this.goodsTitle = goodsTitle;
         this.count = count;
         if (count < 0){
-            throw new Exception("Число покупок товара не может быть отрицательным");
+            throw new RuntimeException("Число покупок товара не может быть отрицательным");
         }
     }
 

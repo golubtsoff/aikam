@@ -11,7 +11,7 @@ public class CriteriasDto {
     private final String type;
     private final List<CriteriaDto> results;
 
-    public static class CriteriaDto{
+    private static class CriteriaDto{
         private Criteria criteria;
         private List<Buyer> results;
     }
